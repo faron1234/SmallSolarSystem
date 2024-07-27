@@ -7,7 +7,7 @@ pygame.init()
 
 screen_size = (display.Info().current_w, display.Info().current_h)
 click = mixer.Sound(os.path.join("static", "buttonclick.wav"))
-Font = pygame.font.Font(os.path.join("static", "Dosis-ExtraLight.ttf"), 45)
+Font = pygame.font.Font(os.path.join("static", "Dosis-ExtraLight.ttf"), 25)
 TitleFont = pygame.font.Font(os.path.join("static", "Dosis-ExtraLight.ttf"), 80)
 screen = display.set_mode(screen_size)
 

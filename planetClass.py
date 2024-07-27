@@ -5,15 +5,16 @@ from pygame import image, transform, draw
 
 
 class Planet:
-    def __init__(self, name, rad, col, vel, dist, mass, scale_size=None, orbiting_planet=None):
+    def __init__(self, name, rad, col, vel, dist, mass, orbiting_planet=None, scale_size=None):
         self.name = name
         self.radius = rad
         self.colour = col
         self.velocity = vel
         self.distance = dist
         self.mass = mass
-        self.scale_size = [1200, 1200] if scale_size is not None else scale_size
         self.orbiting_planet = orbiting_planet
+        self.scale_size = scale_size if scale_size is not None else [1200, 1200]
+        self.moving = True
         self.y = None
         self.x = None
         self.angle = uniform(0, 6.2832)
@@ -28,7 +29,7 @@ class Planet:
         draw.circle(screen, self.colour, [int(self.x), int(self.y)], int(scaled_radius))
 
     def updatePos(self, scale, center):
-        self.angle += self.velocity
+        self.angle += self.velocity if self.moving else +0
         scaled_distance = self.distance / scale
         xChange = math.sin(self.angle) * scaled_distance
         yChange = math.cos(self.angle) * scaled_distance
@@ -36,16 +37,10 @@ class Planet:
         self.y = yChange + self.centre_y(center)
 
     def centre_x(self, center):
-        if self.orbiting_planet is not None:
-            return self.orbiting_planet.x
-        else:
-            return center[0]
+        return self.orbiting_planet.x if self.orbiting_planet else center[0]
 
     def centre_y(self, center):
-        if self.orbiting_planet is not None:
-            return self.orbiting_planet.y
-        else:
-            return center[1]
+        return self.orbiting_planet.y if self.orbiting_planet else center[1]
 
     def centre_xa(self):
         return self.x
@@ -68,18 +63,30 @@ class Planet:
 
     @classmethod
     def stop(cls):
+        print("Stopping Planets")
         for planet in Planets:
-            planet.velocity = 0
+            planet.moving = False
+
+    @classmethod
+    def moving(cls):
+        return any(planet.moving for planet in Planets)
+
+    @classmethod
+    def move(cls):
+        print("Moving Planets")
+        for planet in Planets:
+            planet.moving = True
 
 
-Sun = Planet("Sun", 696340, Cols.sun, 0, 0, "1.989 × 10^30 kg", [1400, 1400])
+# Initialize the planets
+Sun = Planet("Sun", 696340, Cols.sun, 0, 0, "1.989 × 10^30 kg", scale_size=[1400, 1400])
 Mercury = Planet("Mercury", 2439.7, Cols.mercury, 0.00477, 57900000, "3.285 × 10^23 kg", Sun)
 Venus = Planet("Venus", 6051.8, Cols.venus, 0.00354, 108200000, "4.867 × 10^24 kg", Sun)
 Earth = Planet("Earth", 6371, Cols.earth, 0.003, 149600000, "5.9722 × 10^24 kg", Sun)
 Moon = Planet("Moon", 1737.4, Cols.venus, 0.015, 384400, "7.3477 × 10^22 kg", Earth)
 Mars = Planet("Mars", 3389.5, Cols.mars, 0.002424, 227900000, "6.39 × 10^23 kg", Sun)
 Jupiter = Planet("Jupiter", 69911, Cols.jupiter, 0.001317, 778600000, "1.898 × 10^27 kg", Sun)
-Saturn = Planet("Saturn", 58232, Cols.saturn, 0.000975, 1433500000, "5.683 × 10^26 kg", [2500, 1400], Sun)
+Saturn = Planet("Saturn", 58232, Cols.saturn, 0.000975, 1433500000, "5.683 × 10^26 kg", Sun, [2500, 1400])
 Uranus = Planet("Uranus", 25362, Cols.uranus, 0.000684, 2872500000, "8.681 × 10^25 kg", Sun)
 Neptune = Planet("Neptune", 24622, Cols.neptune, 0.000546, 4495100000, "1.024 × 10^26 kg", Sun)
 Pluto = Planet("Pluto", 1188.3, Cols.pluto, 0.000471, 5906376272, "1.30900 × 10^22 kg", Sun)

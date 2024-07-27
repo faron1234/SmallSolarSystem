@@ -1,7 +1,7 @@
 import pygame
-from pygame import mouse, display, MOUSEBUTTONUP as MBU, MOUSEBUTTONDOWN as MBD, K_ESCAPE as ESC, K_UP as UP, K_DOWN as DOWN
+from pygame import mouse, display, MOUSEBUTTONUP as MBU, MOUSEBUTTONDOWN as MBD, K_ESCAPE as ESC, K_UP as UP, K_DOWN as DOWN, K_SPACE as SPACE
 from text_class import playText, InfoText
-from planetClass import Planets
+from planetClass import Planets, Planet
 from button_class import SpeedUpButton, StopButton, SpeedDownButton, Button, button_press
 from Static.static import Font, Background, Cols, click, screen
 
@@ -49,7 +49,7 @@ class Run:
         quit_game() if event.key == ESC else None
         self.zoom_in = True if event.key == UP else False
         self.zoom_out = True if event.key == DOWN else False
-        print(self.zoom_out, self.zoom_in)
+        Planet.move() if event.key == SPACE and not Planet.moving() else Planet.stop() if event.key == SPACE and Planet.moving() else None
 
     def events(self):
         for event in pygame.event.get():
