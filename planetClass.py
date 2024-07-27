@@ -3,13 +3,21 @@ from random import uniform
 from Static.static import screen_size, Cols
 from pygame import image, transform, draw
 
+# Gravitational constant
+G = 6.67430e-11
+# Mass of the Sun (in kg)
+M_sun = 1.989e30
+# Astronomical Unit (distance from Earth to Sun in meters)
+AU = 1.496e11
+# Velocity scale to adjust orbital speeds for simulation
+velocity_scale = 1e-4
+
 
 class Planet:
-    def __init__(self, name, rad, col, vel, dist, mass, orbiting_planet=None, scale_size=None):
+    def __init__(self, name, rad, col, dist, mass, orbiting_planet=None, scale_size=None):
         self.name = name
         self.radius = rad
         self.colour = col
-        self.velocity = vel
         self.distance = dist
         self.mass = mass
         self.orbiting_planet = orbiting_planet
@@ -17,9 +25,15 @@ class Planet:
         self.moving = True
         self.y = None
         self.x = None
+        self.velocity = self.calculate_velocity() * velocity_scale if orbiting_planet else 0
         self.angle = uniform(0, 6.2832)
         self.image = transform.scale(image.load(f"Static/images/{self.name}.png"), self.scale_size)
         self.centre_of_screen = (screen_size[0] / 2, screen_size[1] / 2)
+
+    def calculate_velocity(self):
+        # Calculate orbital velocity based on distance from Sun (or orbiting planet)
+        r = self.distance * 1000  # convert distance from km to meters
+        return math.sqrt(G * M_sun / r) / 1000  # convert velocity from m/s to km/s
 
     def render(self, screen, scale, center):
         scaled_distance = self.distance / scale
@@ -63,7 +77,6 @@ class Planet:
 
     @classmethod
     def stop(cls):
-        print("Stopping Planets")
         for planet in Planets:
             planet.moving = False
 
@@ -71,23 +84,19 @@ class Planet:
     def moving(cls):
         return any(planet.moving for planet in Planets)
 
-    @classmethod
-    def move(cls):
-        print("Moving Planets")
-        for planet in Planets:
-            planet.moving = True
 
+# Initialize the planets with adjusted velocities
+Sun = Planet("Sun", 696340, Cols.sun, 0, "1.989 × 10^30 kg", scale_size=[1400, 1400])
+Mercury = Planet("Mercury", 2439.7, Cols.mercury, 57900000, "3.285 × 10^23 kg", Sun)
+Venus = Planet("Venus", 6051.8, Cols.venus, 108200000, "4.867 × 10^24 kg", Sun)
+Earth = Planet("Earth", 6371, Cols.earth, 149600000, "5.9722 × 10^24 kg", Sun)
+Moon = Planet("Moon", 1737.4, Cols.venus, 384400, "7.3477 × 10^22 kg", Earth)  # Correct orbiting planet
+Mars = Planet("Mars", 3389.5, Cols.mars, 227900000, "6.39 × 10^23 kg", Sun)
+Jupiter = Planet("Jupiter", 69911, Cols.jupiter, 778600000, "1.898 × 10^27 kg", Sun)
+Saturn = Planet("Saturn", 58232, Cols.saturn, 1433500000, "5.683 × 10^26 kg", Sun, [2500, 1400])
+Uranus = Planet("Uranus", 25362, Cols.uranus, 2872500000, "8.681 × 10^25 kg", Sun)
+Neptune = Planet("Neptune", 24622, Cols.neptune, 4495100000, "1.024 × 10^26 kg", Sun)
+Pluto = Planet("Pluto", 1188.3, Cols.pluto, 5906376272, "1.30900 × 10^22 kg", Sun)
 
-# Initialize the planets
-Sun = Planet("Sun", 696340, Cols.sun, 0, 0, "1.989 × 10^30 kg", scale_size=[1400, 1400])
-Mercury = Planet("Mercury", 2439.7, Cols.mercury, 0.00477, 57900000, "3.285 × 10^23 kg", Sun)
-Venus = Planet("Venus", 6051.8, Cols.venus, 0.00354, 108200000, "4.867 × 10^24 kg", Sun)
-Earth = Planet("Earth", 6371, Cols.earth, 0.003, 149600000, "5.9722 × 10^24 kg", Sun)
-Moon = Planet("Moon", 1737.4, Cols.venus, 0.015, 384400, "7.3477 × 10^22 kg", Earth)
-Mars = Planet("Mars", 3389.5, Cols.mars, 0.002424, 227900000, "6.39 × 10^23 kg", Sun)
-Jupiter = Planet("Jupiter", 69911, Cols.jupiter, 0.001317, 778600000, "1.898 × 10^27 kg", Sun)
-Saturn = Planet("Saturn", 58232, Cols.saturn, 0.000975, 1433500000, "5.683 × 10^26 kg", Sun, [2500, 1400])
-Uranus = Planet("Uranus", 25362, Cols.uranus, 0.000684, 2872500000, "8.681 × 10^25 kg", Sun)
-Neptune = Planet("Neptune", 24622, Cols.neptune, 0.000546, 4495100000, "1.024 × 10^26 kg", Sun)
-Pluto = Planet("Pluto", 1188.3, Cols.pluto, 0.000471, 5906376272, "1.30900 × 10^22 kg", Sun)
-Planets = [Sun, Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune, Pluto, Moon]
+# Collect all planets into a list
+Planets = [Sun, Mercury, Venus, Earth, Moon, Mars, Jupiter, Saturn, Uranus, Neptune, Pluto]
