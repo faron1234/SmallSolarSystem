@@ -30,6 +30,14 @@ class Cols:
     pluto = (235, 193, 153)
 
 
+class PhysicsConstant:
+    G = 6.67430e-11  # Gravitational constant
+    AU = 1.496e11  # Astronomical Unit (distance from Earth to Sun in meters)
+
+
+# Velocity scale to adjust orbital speeds for simulation
+velocity_scale = 1e-9
+
 Background = pygame.image.load(os.path.join("static", "images/Stars.jpg"))
 Background = pygame.transform.scale(Background, screen_size)
 

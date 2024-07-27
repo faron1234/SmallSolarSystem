@@ -1,16 +1,7 @@
 import math
 from random import uniform
-from Static.static import screen_size, Cols
+from Static.static import screen_size, Cols, PhysicsConstant as PC, velocity_scale
 from pygame import image, transform, draw
-
-# Gravitational constant
-G = 6.67430e-11
-# Mass of the Sun (in kg)
-M_sun = 1.989e30
-# Astronomical Unit (distance from Earth to Sun in meters)
-AU = 1.496e11
-# Velocity scale to adjust orbital speeds for simulation
-velocity_scale = 1e-4
 
 
 class Planet:
@@ -33,7 +24,7 @@ class Planet:
     def calculate_velocity(self):
         # Calculate orbital velocity based on distance from Sun (or orbiting planet)
         r = self.distance * 1000  # convert distance from km to meters
-        return math.sqrt(G * M_sun / r) / 1000  # convert velocity from m/s to km/s
+        return math.sqrt(PC.G * Sun.mass / r) / 1000  # convert velocity from m/s to km/s
 
     def render(self, screen, scale, center):
         scaled_distance = self.distance / scale
@@ -68,12 +59,12 @@ class Planet:
     @classmethod
     def speedUp(cls):
         for planet in Planets:
-            planet.velocity += 0.2 * planet.velocity
+            planet.velocity += 0.02 * planet.velocity
 
     @classmethod
     def slowDown(cls):
         for planet in Planets:
-            planet.velocity -= 0.2 * planet.velocity
+            planet.velocity -= 0.02 * planet.velocity
 
     @classmethod
     def stop(cls):
@@ -91,7 +82,7 @@ class Planet:
 
 
 # Initialize the planets with adjusted velocities
-Sun = Planet("Sun", 696340, Cols.sun, 0, "1.989 × 10^30 kg", scale_size=[1400, 1400])
+Sun = Planet("Sun", 696340, Cols.sun, 0, 1.989e30, scale_size=[1400, 1400])
 Mercury = Planet("Mercury", 2439.7, Cols.mercury, 57900000, "3.285 × 10^23 kg", Sun)
 Venus = Planet("Venus", 6051.8, Cols.venus, 108200000, "4.867 × 10^24 kg", Sun)
 Earth = Planet("Earth", 6371, Cols.earth, 149600000, "5.9722 × 10^24 kg", Sun)

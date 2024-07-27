@@ -1,5 +1,5 @@
 import pygame
-from pygame import mouse, display, MOUSEBUTTONUP as MBU, MOUSEBUTTONDOWN as MBD, K_ESCAPE as ESC, K_UP as UP, K_DOWN as DOWN, K_SPACE as SPACE
+from pygame import mouse, display, MOUSEBUTTONUP as MBU, MOUSEBUTTONDOWN as MBD, K_ESCAPE as ESC, K_SPACE as SPACE
 from text_class import playText, InfoText
 from planetClass import Planets, Planet
 from button_class import SpeedUpButton, StopButton, SpeedDownButton, Button, button_press
@@ -38,6 +38,8 @@ class Run:
         self.buttonDown = False
         self.zoom_in = False
         self.zoom_out = False
+        self.speedUp = False
+        self.slowDown = False
         self.mouse_pos = [0, 0]
         self.run()
 
@@ -46,12 +48,17 @@ class Run:
         self.buttonDown = True if event.type == MBD else False if event.type == MBU else self.buttonDown
         if event.type == pygame.KEYDOWN:
             quit_game() if event.key == ESC else None
-            self.zoom_in = True if event.key == UP else self.zoom_in
-            self.zoom_out = True if event.key == DOWN else self.zoom_out
+            self.zoom_in = True if event.key == pygame.K_DOWN else self.zoom_in
+            self.zoom_out = True if event.key == pygame.K_UP else self.zoom_out
+            self.speedUp = True if event.key == pygame.K_EQUALS else self.speedUp
+            self.slowDown = True if event.key == pygame.K_MINUS else self.slowDown
             Planet.move() if event.key == SPACE and not Planet.moving() else Planet.stop() if event.key == SPACE and Planet.moving() else None
         if event.type == pygame.KEYUP:
-            self.zoom_in = False if event.key == UP else self.zoom_in
-            self.zoom_out = False if event.key == DOWN else self.zoom_out
+            self.zoom_in = False if event.key == pygame.K_DOWN else self.zoom_in
+            self.zoom_out = False if event.key == pygame.K_UP else self.zoom_out
+            self.speedUp = False if event.key == pygame.K_EQUALS else self.speedUp
+            self.slowDown = False if event.key == pygame.K_MINUS else self.slowDown
+
 
     def events(self):
         for event in pygame.event.get():
@@ -70,6 +77,9 @@ class Run:
             click.play()
             # self.current_screen = FactsPage(planet)
 
+    def speedChange(self):
+        Planet.speedUp() if self.speedUp else Planet.slowDown() if self.slowDown else None
+
     def scale(self):
         old_scale = Scale.scale
         Scale.scale *= 1.01 if self.zoom_in else (1 / 1.01 if self.zoom_out else 1)
@@ -87,6 +97,7 @@ class Run:
             self.current_screen.draw()
             self.events()
             self.scale() if self.zoom_in or self.zoom_out else None
+            self.speedChange() if self.speedUp or self.slowDown else None
             [self.renderPlanet(planet) for planet in Planets] if self.current_screen.isPrimary() else None
             display.flip()
             clock.tick(60)
