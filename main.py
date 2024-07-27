@@ -44,12 +44,14 @@ class Run:
     def event(self, event):
         self.done = True if event.type == pygame.QUIT else None
         self.buttonDown = True if event.type == MBD else False if event.type == MBU else self.buttonDown
-        if event.type != pygame.KEYDOWN:
-            return
-        quit_game() if event.key == ESC else None
-        self.zoom_in = True if event.key == UP else False
-        self.zoom_out = True if event.key == DOWN else False
-        Planet.move() if event.key == SPACE and not Planet.moving() else Planet.stop() if event.key == SPACE and Planet.moving() else None
+        if event.type == pygame.KEYDOWN:
+            quit_game() if event.key == ESC else None
+            self.zoom_in = True if event.key == UP else self.zoom_in
+            self.zoom_out = True if event.key == DOWN else self.zoom_out
+            Planet.move() if event.key == SPACE and not Planet.moving() else Planet.stop() if event.key == SPACE and Planet.moving() else None
+        if event.type == pygame.KEYUP:
+            self.zoom_in = False if event.key == UP else self.zoom_in
+            self.zoom_out = False if event.key == DOWN else self.zoom_out
 
     def events(self):
         for event in pygame.event.get():
@@ -70,7 +72,7 @@ class Run:
 
     def scale(self):
         old_scale = Scale.scale
-        Scale.scale *= 1.2 if self.zoom_in else (1 / 1.2 if self.zoom_out else 1)
+        Scale.scale *= 1.01 if self.zoom_in else (1 / 1.01 if self.zoom_out else 1)
         scale_change = Scale.scale / old_scale
         Scale.center = (
             Scale.center[0] + (self.mouse_pos[0] - Scale.center[0]) * (1 - 1 / scale_change),
@@ -79,15 +81,15 @@ class Run:
 
     def run(self):
         self.current_screen = play
+        clock = pygame.time.Clock()
         while not self.done:
             self.mouse_pos[0], self.mouse_pos[1] = mouse.get_pos()
             self.current_screen.draw()
             self.events()
             self.scale() if self.zoom_in or self.zoom_out else None
-            self.zoom_in = False
-            self.zoom_out = False
             [self.renderPlanet(planet) for planet in Planets] if self.current_screen.isPrimary() else None
             display.flip()
+            clock.tick(60)
 
 
 # button_press((mx, my), ButtonDown, SpeedUpButton, SpeedDownButton, StopButton)

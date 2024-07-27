@@ -81,6 +81,11 @@ class Planet:
             planet.moving = False
 
     @classmethod
+    def move(cls):
+        for planet in Planets:
+            planet.moving = True
+
+    @classmethod
     def moving(cls):
         return any(planet.moving for planet in Planets)
 
