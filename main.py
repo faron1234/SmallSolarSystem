@@ -43,22 +43,21 @@ class Run:
         self.mouse_pos = [0, 0]
         self.run()
 
+    def check_keys(self, event, state):
+        self.zoom_in = state if event.key == pygame.K_DOWN else self.zoom_in
+        self.zoom_out = state if event.key == pygame.K_UP else self.zoom_out
+        self.speedUp = state if event.key == pygame.K_EQUALS else self.speedUp
+        self.slowDown = state if event.key == pygame.K_MINUS else self.slowDown
+
     def event(self, event):
         self.done = True if event.type == pygame.QUIT else None
         self.buttonDown = True if event.type == MBD else False if event.type == MBU else self.buttonDown
         if event.type == pygame.KEYDOWN:
             quit_game() if event.key == ESC else None
-            self.zoom_in = True if event.key == pygame.K_DOWN else self.zoom_in
-            self.zoom_out = True if event.key == pygame.K_UP else self.zoom_out
-            self.speedUp = True if event.key == pygame.K_EQUALS else self.speedUp
-            self.slowDown = True if event.key == pygame.K_MINUS else self.slowDown
+            self.check_keys(event, True)
             Planet.move() if event.key == SPACE and not Planet.moving() else Planet.stop() if event.key == SPACE and Planet.moving() else None
-        if event.type == pygame.KEYUP:
-            self.zoom_in = False if event.key == pygame.K_DOWN else self.zoom_in
-            self.zoom_out = False if event.key == pygame.K_UP else self.zoom_out
-            self.speedUp = False if event.key == pygame.K_EQUALS else self.speedUp
-            self.slowDown = False if event.key == pygame.K_MINUS else self.slowDown
-
+        elif event.type == pygame.KEYUP:
+            self.check_keys(event, False)
 
     def events(self):
         for event in pygame.event.get():

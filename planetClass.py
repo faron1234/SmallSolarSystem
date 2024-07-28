@@ -1,6 +1,6 @@
 import math
 from random import uniform
-from Static.static import screen_size, Cols, PhysicsConstant as PC, velocity_scale
+from Static.static import screen_size, Cols, PhysicsConstant as pC, velocity_scale
 from pygame import image, transform, draw
 
 
@@ -24,7 +24,7 @@ class Planet:
     def calculate_velocity(self):
         # Calculate orbital velocity based on distance from Sun (or orbiting planet)
         r = self.distance * 1000  # convert distance from km to meters
-        return math.sqrt(PC.G * Sun.mass / r) / 1000  # convert velocity from m/s to km/s
+        return math.sqrt(pC.G * Sun.mass / r) / 1000  # convert velocity from m/s to km/s
 
     def render(self, screen, scale, center):
         scaled_distance = self.distance / scale
